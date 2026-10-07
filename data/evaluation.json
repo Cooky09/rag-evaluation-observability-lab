@@ -1,0 +1,103 @@
+[
+  {
+    "id": "q001",
+    "question": "Why should a Python project use a virtual environment?",
+    "expected_document": "python.md",
+    "expected_facts": [
+      "A virtual environment isolates project dependencies.",
+      "It reduces dependency conflicts between projects."
+    ],
+    "reference_answer": "A virtual environment isolates a project's Python dependencies from other projects and helps reduce dependency conflicts."
+  },
+  {
+    "id": "q002",
+    "question": "How do you create a Python virtual environment?",
+    "expected_document": "python.md",
+    "expected_facts": [
+      "Use python -m venv.",
+      "The environment can be activated after creation."
+    ],
+    "reference_answer": "A Python virtual environment can be created with python -m venv .venv and then activated using the appropriate activation command."
+  },
+  {
+    "id": "q003",
+    "question": "What is a Docker image?",
+    "expected_document": "docker.md",
+    "expected_facts": [
+      "A Docker image is a packaged template.",
+      "Containers are created from images."
+    ],
+    "reference_answer": "A Docker image is a packaged template used to create Docker containers."
+  },
+  {
+    "id": "q004",
+    "question": "What does docker compose up do?",
+    "expected_document": "docker.md",
+    "expected_facts": [
+      "Docker Compose can manage multiple services.",
+      "docker compose up starts the services."
+    ],
+    "reference_answer": "docker compose up starts the services defined in a Docker Compose configuration."
+  },
+  {
+    "id": "q005",
+    "question": "What is FastAPI used for?",
+    "expected_document": "fastapi.md",
+    "expected_facts": [
+      "FastAPI is a Python framework.",
+      "It is used to build APIs."
+    ],
+    "reference_answer": "FastAPI is a Python framework used for building APIs."
+  },
+  {
+    "id": "q006",
+    "question": "How can FastAPI validate incoming request data?",
+    "expected_document": "fastapi.md",
+    "expected_facts": [
+      "FastAPI can use Pydantic models.",
+      "Pydantic models define and validate request data."
+    ],
+    "reference_answer": "FastAPI can use Pydantic models to define and validate structured incoming request data."
+  },
+  {
+    "id": "q007",
+    "question": "How can a PyTorch tensor be moved to an NVIDIA GPU?",
+    "expected_document": "cuda.md",
+    "expected_facts": [
+      "PyTorch tensors can be moved to CUDA.",
+      "The tensor can use the cuda device."
+    ],
+    "reference_answer": "A PyTorch tensor can be moved to an NVIDIA GPU using tensor.to('cuda')."
+  },
+  {
+    "id": "q008",
+    "question": "What is batch inference?",
+    "expected_document": "cuda.md",
+    "expected_facts": [
+      "Multiple inputs can be processed together.",
+      "Batch size determines how many inputs are processed together."
+    ],
+    "reference_answer": "Batch inference processes multiple inputs together rather than processing each input individually."
+  },
+  {
+    "id": "q009",
+    "question": "What is FP16 inference?",
+    "expected_document": "cuda.md",
+    "expected_facts": [
+      "FP16 uses 16-bit floating-point values.",
+      "FP16 can potentially reduce memory usage.",
+      "FP16 can potentially improve throughput on supported hardware."
+    ],
+    "reference_answer": "FP16 inference uses 16-bit floating-point values and can potentially reduce memory usage and improve throughput on supported hardware."
+  },
+  {
+    "id": "q010",
+    "question": "Why is CUDA synchronization important when benchmarking GPU inference?",
+    "expected_document": "cuda.md",
+    "expected_facts": [
+      "GPU operations can execute asynchronously.",
+      "CUDA synchronization helps produce meaningful timing measurements."
+    ],
+    "reference_answer": "CUDA operations can execute asynchronously, so synchronization helps ensure GPU work has completed before measuring inference time."
+  }
+]

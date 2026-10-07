@@ -1,0 +1,324 @@
+{
+  "name": "evaluation-workflow",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -16
+      ],
+      "id": "33791b4b-055a-4092-ad66-b6897b1385d0",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "url": "http://host.docker.internal:8000/health",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -560,
+        -16
+      ],
+      "id": "a9afdd6d-af2f-46f6-8c94-18e25dff9301",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8000/automation/evaluate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -400,
+        -16
+      ],
+      "id": "d99eee31-bb1c-4053-af82-ee044cdcbfe1",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "a12bf42a-95fa-46cf-a655-f8247f834513",
+              "leftValue": "={{ $json.regression.passed }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -256,
+        -16
+      ],
+      "id": "10c3f391-4213-4c3e-8537-eb671c8e279e",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "const output = $json.stdout;\n\nfunction extract(pattern) {\n  const match = output.match(pattern);\n  return match ? Number(match[1]) : null;\n}\n\nconst averageRecall = extract(\n  /Average retrieval recall:\\s*([0-9.]+)/\n);\n\nconst answerSimilarity = extract(\n  /Average answer similarity:\\s*([0-9.]+)/\n);\n\nconst factCoverage = extract(\n  /Average fact coverage:\\s*([0-9.]+)/\n);\n\nconst groundedRate = extract(\n  /Grounded rate:\\s*([0-9.]+)/\n);\n\nconst bestThroughput = extract(\n  /Best throughput:\\s*([0-9.]+)\\s*samples\\/sec/\n);\n\nconst lowestLatency = extract(\n  /Lowest latency:\\s*([0-9.]+)\\s*ms/\n);\n\nreturn [\n  {\n    json: {\n      status: $json.status,\n      exit_code: $json.exit_code,\n      average_retrieval_recall: averageRecall,\n      average_answer_similarity: answerSimilarity,\n      average_fact_coverage: factCoverage,\n      grounded_rate: groundedRate,\n      best_throughput_samples_per_sec: bestThroughput,\n      lowest_latency_ms: lowestLatency,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -96,
+        -32
+      ],
+      "id": "8740bed7-7916-4af5-9c52-eb5a93d0c659",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3cad4dd4-fbc6-4c43-9b25-41e92f2617ab",
+              "leftValue": "={{$json.average_retrieval_recall}}",
+              "rightValue": 0.9,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "6fcf1713-ce9c-4ad8-90f0-7f1d095668bc",
+              "leftValue": "={{$json.average_answer_similarity}}",
+              "rightValue": 0.25,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "eb9f8e3a-69dc-4d5b-b69c-5531c80bbe75",
+              "leftValue": "={{$json.average_fact_coverage}}",
+              "rightValue": 0.25,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            },
+            {
+              "id": "b1498457-f606-4d28-855c-d30aa93184ab",
+              "leftValue": "={{$json.grounded_rate}}",
+              "rightValue": 0.3,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        80,
+        -32
+      ],
+      "id": "50745da0-2748-4c2c-a251-8673ab82b2dd",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a5aba2c6-4d11-47a5-a824-6b38d869dc19",
+              "name": "evaluation_status",
+              "value": "PASS",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        240,
+        -80
+      ],
+      "id": "279c5572-1190-424d-b2e8-62d81ed7bcb4",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1e67ccbc-f754-42a8-98d8-fe385d44718d",
+              "name": "evaluation_status ",
+              "value": "FAIL",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        224,
+        80
+      ],
+      "id": "411121a5-b1b5-499d-8c3e-97cda916a7a2",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $json;\n\nreturn [\n  {\n    json: {\n      evaluation_status: data.evaluation_status,\n      summary:\n        `RAG Evaluation: ${data.evaluation_status}\\n` +\n        `Retrieval recall: ${data.average_retrieval_recall}\\n` +\n        `Answer similarity: ${data.average_answer_similarity}\\n` +\n        `Fact coverage: ${data.average_fact_coverage}\\n` +\n        `Grounded rate: ${data.grounded_rate}\\n` +\n        `Best throughput: ${data.best_throughput_samples_per_sec} samples/sec\\n` +\n        `Lowest latency: ${data.lowest_latency_ms} ms`,\n    },\n  },\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        -32
+      ],
+      "id": "bbcd064f-2c7c-4cb4-aec0-80795880cdfd",
+      "name": "Create Evaluation Summary"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Create Evaluation Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Create Evaluation Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "efa04af1-e662-4fb6-b850-5180c5857fa4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "918c50b60754f80b273884e7465fe2cf0819c8c450e436605b74f88070a30237"
+  },
+  "nodeGroups": [],
+  "id": "acPmVxjUDUMg4Sqn",
+  "tags": []
+}
